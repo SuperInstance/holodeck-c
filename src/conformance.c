@@ -21,7 +21,7 @@ int test_room_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room = room_create("Test Room", "A test room");
+    Room *room = room_create("Test Room", "Test Room", "A test room");
     if (!room) {
         results[current_test].passed = 0;
         results[current_test].message = "Failed to create room";
@@ -45,7 +45,7 @@ int test_room_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Test", "Test");
+    room = room_create("Test", "Test", "Test");
     room_destroy(room);
     test_num++;
 
@@ -55,8 +55,8 @@ int test_room_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room1 = room_create("Room1", "First");
-    Room *room2 = room_create("Room2", "Second");
+    Room *room1 = room_create("Room1", "Room1", "First");
+    Room *room2 = room_create("Room2", "Room2", "Second");
     room_connect(room1, room2, "north");
     Room *dest = room_find_exit(room1, "north");
     if (!dest) {
@@ -76,8 +76,8 @@ int test_room_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room1 = room_create("Room1", "First");
-    room2 = room_create("Room2", "Second");
+    room1 = room_create("Room1", "Room1", "First");
+    room2 = room_create("Room2", "Room2", "Second");
     room_connect(room1, room2, "north");
     room_disconnect(room1, "north");
     dest = room_find_exit(room1, "north");
@@ -102,12 +102,12 @@ int test_agent_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room = room_create("Lobby", "Welcome");
+    Room *room = room_create("Lobby", "Lobby", "Welcome");
     Agent *agent = agent_create(-1);
     agent_set_name(agent, "TestUser");
     room_add_agent(room, agent);
     agent_set_room(agent, room);
-    if (room_agent_count(room) != 1) {
+    if (room->agent_count != 1) {
         results[current_test].passed = 0;
         results[current_test].message = "Agent count wrong";
     } else if (agent_get_room(agent) != room) {
@@ -124,12 +124,12 @@ int test_agent_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Lobby", "Welcome");
+    room = room_create("Lobby", "Lobby", "Welcome");
     agent = agent_create(-1);
     agent_set_name(agent, "TestUser");
     room_add_agent(room, agent);
     room_remove_agent(room, agent);
-    if (room_agent_count(room) != 0) {
+    if (room->agent_count != 0) {
         results[current_test].passed = 0;
         results[current_test].message = "Agent still in room";
     }
@@ -143,8 +143,8 @@ int test_agent_lifecycle(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room1 = room_create("Room1", "First");
-    Room *room2b = room_create("Room2", "Second");
+    Room *room1 = room_create("Room1", "Room1", "First");
+    Room *room2b = room_create("Room2", "Room2", "Second");
     room_connect(room1, room2b, "east");
     agent = agent_create(-1);
     agent_set_name(agent, "Mover");
@@ -158,10 +158,10 @@ int test_agent_lifecycle(TestResult *results, int offset) {
     if (agent_get_room(agent) != room2b) {
         results[current_test].passed = 0;
         results[current_test].message = "Agent didn't move";
-    } else if (room_agent_count(room1) != 0) {
+    } else if (room1->agent_count != 0) {
         results[current_test].passed = 0;
         results[current_test].message = "Left room still has agent";
-    } else if (room_agent_count(room2b) != 1) {
+    } else if (room2b->agent_count != 1) {
         results[current_test].passed = 0;
         results[current_test].message = "New room missing agent";
     }
@@ -184,7 +184,7 @@ int test_communication(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room = room_create("Chat", "Talk here");
+    Room *room = room_create("Chat", "Chat", "Talk here");
     Agent *alice = agent_create(-1);
     Agent *bob = agent_create(-1);
     agent_set_name(alice, "Alice");
@@ -194,6 +194,8 @@ int test_communication(TestResult *results, int offset) {
 
     alice->output_pos = 0;
     bob->output_pos = 0;
+    alice->room = room;
+    bob->room = room;
 
     comms_say(alice, room, "Hello everyone");
 
@@ -213,15 +215,17 @@ int test_communication(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Private", "Private room");
+    room = room_create("Private", "Private", "Private room");
     alice = agent_create(-1);
     bob = agent_create(-1);
     agent_set_name(alice, "Alice");
     agent_set_name(bob, "Bob");
     room_add_agent(room, alice);
     room_add_agent(room, bob);
+    alice->room = room;
+    bob->room = room;
 
-    comms_tell(alice, room, "Bob", "Secret message");
+    comms_tell(alice, room, bob, "Secret message");
 
     if (agent_mailbox_count(bob) != 1) {
         results[current_test].passed = 0;
@@ -239,8 +243,8 @@ int test_communication(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room1 = room_create("Room1", "First");
-    Room *room2 = room_create("Room2", "Second");
+    Room *room1 = room_create("Room1", "Room1", "First");
+    Room *room2 = room_create("Room2", "Room2", "Second");
     room_connect(room1, room2, "east");
     Agent *yeller = agent_create(-1);
     Agent *listener = agent_create(-1);
@@ -272,14 +276,17 @@ int test_communication(TestResult *results, int offset) {
     Agent *gossiper = agent_create(-1);
     agent_set_name(gossiper, "Gossip");
     gossiper->output_pos = 0;
+    Room *gossip_room = room_create("GossipRoom", "GossipRoom", "For gossip");
+    gossiper->room = gossip_room;
 
-    comms_gossip(gossiper, "Did you hear?");
+    comms_gossip(gossiper, gossip_room, "Did you hear?");
 
     if (gossiper->output_pos == 0) {
         results[current_test].passed = 0;
         results[current_test].message = "Gossiper didn't see message";
     }
 
+    room_destroy(gossip_room);
     agent_destroy(gossiper);
     test_num++;
 
@@ -289,7 +296,7 @@ int test_communication(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Wall", "Has a wall");
+    room = room_create("Wall", "Wall", "Has a wall");
     room_add_note(room, "Alice", "I was here");
 
     const Note *notes = room_get_notes(room);
@@ -313,7 +320,7 @@ int test_communication(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Wall", "Has a wall");
+    room = room_create("Wall", "Wall", "Has a wall");
     room_add_note(room, "Bob", "Me too");
 
     notes = room_get_notes(room);
@@ -465,10 +472,10 @@ int test_live_connections(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room1 = room_create("Room1", "First");
-    Room *room2 = room_create("Room2", "Second");
+    Room *room1 = room_create("Room1", "Room1", "First");
+    Room *room2 = room_create("Room2", "Room2", "Second");
     room_connect(room1, room2, "north");
-    agent = agent_create(-1);
+    Agent *agent = agent_create(-1);
     agent_set_room(agent, room1);
     room_add_agent(room1, agent);
 
@@ -499,7 +506,7 @@ int test_room_runtime(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room = room_create("Runtime", "Runtime test");
+    Room *room = room_create("Runtime", "Runtime", "Runtime test");
     Agent *agent = agent_create(-1);
 
     runtime_boot(room, agent);
@@ -520,7 +527,7 @@ int test_room_runtime(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Runtime", "Runtime test");
+    room = room_create("Runtime", "Runtime", "Runtime test");
     agent = agent_create(-1);
     runtime_boot(room, agent);
 
@@ -632,7 +639,7 @@ int test_room_runtime(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("BootTest", "Boot test");
+    room = room_create("BootTest", "BootTest", "Boot test");
     agent = agent_create(-1);
 
     runtime_boot(room, agent);
@@ -653,7 +660,7 @@ int test_room_runtime(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Safe", "Safety test");
+    room = room_create("Safe", "Safe", "Safety test");
     agent = agent_create(-1);
     agent_set_permission(agent, 0);
 
@@ -670,7 +677,7 @@ int test_room_runtime(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("CmdTest", "Command test");
+    room = room_create("CmdTest", "CmdTest", "Command test");
     agent = agent_create(-1);
     agent_set_room(agent, room);
     room_add_agent(room, agent);
@@ -700,7 +707,7 @@ int test_combat_oversight(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    Room *room = room_create("Combat", "Combat zone");
+    Room *room = room_create("Combat", "Combat", "Combat zone");
     Agent *agent = agent_create(-1);
     agent_set_name(agent, "Commander");
 
@@ -722,7 +729,7 @@ int test_combat_oversight(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Combat", "Combat zone");
+    room = room_create("Combat", "Combat", "Combat zone");
     agent = agent_create(-1);
     OversightSession *session2 = oversight_start(agent, room);
 
@@ -845,7 +852,7 @@ int test_combat_oversight(TestResult *results, int offset) {
     results[current_test].passed = 1;
     results[current_test].message = "OK";
 
-    room = room_create("Debrief", "Debriefing room");
+    room = room_create("Debrief", "Debrief", "Debriefing room");
     agent = agent_create(-1);
     agent_set_name(agent, "Commander");
 
@@ -910,4 +917,64 @@ int conformance_run_all(TestResult *results, int max_results) {
     total += count;
 
     return total;
+}
+
+int main(void) {
+    TestResult results[100];
+    int total = conformance_run_all(results, 100);
+    int passed = 0;
+
+    printf("═══ Holodeck C — Conformance Suite ═══\n\n");
+    printf("── Room Lifecycle ──\n");
+    for (int i = 0; i < 4; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n── Agent Lifecycle ──\n");
+    for (int i = 4; i < 7; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n── Communication ──\n");
+    for (int i = 7; i < 13; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n── Systems ──\n");
+    for (int i = 13; i < 17; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n── Live Connections ──\n");
+    for (int i = 17; i < 20; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n── Room Runtime ──\n");
+    for (int i = 20; i < 30; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n── Combat Oversight ──\n");
+    for (int i = 30; i < total; i++) {
+        printf("%s %s\n", results[i].name, results[i].passed ? "PASS" : "FAIL");
+        if (results[i].passed) passed++;
+    }
+
+    printf("\n════════════════════════════════\n");
+    printf("Results: %d/%d passed\n", passed, total);
+
+    if (passed == total) {
+        printf("Status: ✅ FLEET CERTIFIED\n");
+        return 0;
+    } else {
+        printf("Status: 🟡 %d FAILED\n", total - passed);
+        return 1;
+    }
 }
