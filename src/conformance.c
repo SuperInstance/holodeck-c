@@ -456,7 +456,7 @@ int test_live_connections(TestResult *results, int offset) {
 
     conn = connection_create_shell("echo hello");
     char output[1024];
-    int result = connection_execute(conn, "", output, sizeof(output));
+    int result = connection_execute(conn, "echo hello", output, sizeof(output));
     connection_destroy(conn);
 
     if (result <= 0) {
