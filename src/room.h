@@ -32,6 +32,7 @@ void room_destroy(Room *room);
 void room_connect(Room *from, Room *to, const char *direction);
 void room_disconnect(Room *room, const char *direction);
 Room *room_find_exit(const Room *room, const char *direction);
+Agent *room_find_agent_by_name(const Room *room, const char *name);
 void room_add_agent(Room *room, Agent *agent);
 void room_remove_agent(Room *room, Agent *agent);
 void room_add_note(Room *room, const char *author, const char *text);

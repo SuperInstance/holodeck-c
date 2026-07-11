@@ -147,7 +147,13 @@ void cmd_tell(Agent *agent, const char *args) {
     Room *room = agent_get_room(agent);
     if (!room) return;
 
-    comms_tell(agent, room, target, message);
+    Agent *target_agent = room_find_agent_by_name(room, target);
+    if (!target_agent) {
+        agent_send(agent, "You don't see anyone by that name here.\n");
+        return;
+    }
+
+    comms_tell(agent, room, target_agent, message);
 }
 
 void cmd_yell(Agent *agent, const char *args) {
