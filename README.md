@@ -126,6 +126,10 @@ quit              — Disconnect
 
 ## Comparison with holodeck-zig and holodeck-go
 
+Sibling implementations of the same FLUX-LCAR protocol:
+**[holodeck-go](https://github.com/SuperInstance/holodeck-go)** (Go 1.24) and
+**[holodeck-zig](https://github.com/SuperInstance/holodeck-zig)** (Zig).
+
 | Feature | holodeck-c | holodeck-go | holodeck-zig |
 |---|---|---|---|
 | Language | C99 | Go 1.24 | Zig |
@@ -147,7 +151,3 @@ All three implementations are **wire-compatible** — they implement the same FL
 ## Dependencies
 
 C99 only. POSIX for sockets (`sys/socket.h`, `sys/select.h`). No external libraries. `gcc -Wall -Wextra -pedantic -std=c99`.
-
----
-
-<img src="callsign1.jpg" width="128" alt="callsign">
