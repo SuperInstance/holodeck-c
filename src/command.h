@@ -16,7 +16,7 @@ void cmd_go(Agent *agent, const char *args);
 void cmd_say(Agent *agent, const char *args);
 void cmd_tell(Agent *agent, const char *args);
 void cmd_yell(Agent *agent, const char *args);
-void cmd_gossip(Agent *agent, Room *room, const char *args);
+void cmd_gossip(Agent *agent, const char *args);
 void cmd_note(Agent *agent, const char *args);
 void cmd_read(Agent *agent, const char *args);
 void cmd_who(Agent *agent, const char *args);

@@ -104,7 +104,7 @@ go <direction>    — Move north/south/east/west
 say <message>     — Speak to everyone in the room
 tell <agent> <msg> — Send a private message
 yell <message>    — Broadcast to adjacent rooms
-gossip <message>  — Broadcast to the entire world
+gossip <message>  — Gossip to the fleet (echoed locally)
 note <message>    — Write a note on the wall
 read              — Read wall notes
 who               — List all agents

@@ -76,13 +76,54 @@ static void test_tell_unknown_target(void) {
     room_destroy(room);
 }
 
+static void test_gossip_echoes_to_sender(void) {
+    printf("\n── gossip command ──\n");
+
+    Room *room = room_create("gossip", "Gossip Room", "A room for testing gossip");
+    Agent *sender = agent_create(-1);
+
+    agent_set_name(sender, "Alice");
+    agent_set_room(sender, room);
+    room_add_agent(room, sender);
+
+    command_execute(sender, "gossip Hello fleet");
+
+    TEST(gossip_echoes_formatted_message);
+    PASS(strstr(sender->output_buffer, "GOSSIP: Hello fleet") != NULL);
+
+    room_remove_agent(room, sender);
+    agent_destroy(sender);
+    room_destroy(room);
+}
+
+static void test_gossip_requires_message(void) {
+    Room *room = room_create("gossip2", "Gossip Room 2", "A room for testing gossip errors");
+    Agent *sender = agent_create(-1);
+
+    agent_set_name(sender, "Alice");
+    agent_set_room(sender, room);
+    room_add_agent(room, sender);
+
+    command_execute(sender, "gossip");
+
+    TEST(gossip_missing_message_reports_error);
+    PASS(strstr(sender->output_buffer, "Gossip what?") != NULL);
+
+    room_remove_agent(room, sender);
+    agent_destroy(sender);
+    room_destroy(room);
+}
+
 int main(void) {
     printf("=== Holodeck C -- Command Tests ===\n\n");
 
     command_register("tell", cmd_tell);
+    command_register("gossip", cmd_gossip);
 
     test_tell_delivers_message();
     test_tell_unknown_target();
+    test_gossip_echoes_to_sender();
+    test_gossip_requires_message();
 
     printf("\n=== Results: %d/%d passed ===\n", passed, total);
 
