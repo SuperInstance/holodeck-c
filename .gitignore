@@ -1,1 +1,16 @@
+# Aider
 .aider*
+
+# Compiled executables / binaries
+/holodeck
+/bin/
+/test_conf
+/test_conf_v2
+/test_full_conf
+/test_rooms
+/test_serial
+/test_command
+
+# Object files & build directories
+*.o
+/obj/

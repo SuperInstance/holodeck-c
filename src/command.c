@@ -147,7 +147,13 @@ void cmd_tell(Agent *agent, const char *args) {
     Room *room = agent_get_room(agent);
     if (!room) return;
 
-    comms_tell(agent, room, target, message);
+    Agent *target_agent = room_find_agent_by_name(room, target);
+    if (!target_agent) {
+        agent_send(agent, "You don't see anyone by that name here.\n");
+        return;
+    }
+
+    comms_tell(agent, room, target_agent, message);
 }
 
 void cmd_yell(Agent *agent, const char *args) {
@@ -162,11 +168,14 @@ void cmd_yell(Agent *agent, const char *args) {
     comms_yell(agent, room, args);
 }
 
-void cmd_gossip(Agent *agent, Room *room, const char *args) {
+void cmd_gossip(Agent *agent, const char *args) {
     if (!agent || !args || !*args) {
         agent_send(agent, "Gossip what?\n");
         return;
     }
+
+    Room *room = agent_get_room(agent);
+    if (!room) return;
 
     comms_gossip(agent, room, args);
 }
@@ -245,7 +254,7 @@ void cmd_help(Agent *agent, const char *args) {
     agent_send(agent, "say <msg>- Say something to the room\n");
     agent_send(agent, "tell <name> <msg> - Tell someone something\n");
     agent_send(agent, "yell <msg>- Yell (heard in adjacent rooms)\n");
-    agent_send(agent, "gossip <msg> - Gossip to the fleet\n");
+    agent_send(agent, "gossip <msg> - Gossip to the fleet (local echo)\n");
     agent_send(agent, "note <msg>- Write a note on the wall\n");
     agent_send(agent, "read    - Read notes on the wall\n");
     agent_send(agent, "who     - See who's connected\n");

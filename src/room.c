@@ -86,6 +86,19 @@ Room *room_find_exit(const Room *room, const char *direction) {
     return NULL;
 }
 
+Agent *room_find_agent_by_name(const Room *room, const char *name) {
+    if (!room || !name) return NULL;
+
+    for (int i = 0; i < HOLO_MAX_AGENTS; i++) {
+        Agent *other = room->agents[i];
+        if (other && strcmp(other->name, name) == 0) {
+            return other;
+        }
+    }
+
+    return NULL;
+}
+
 void room_add_agent(Room *room, Agent *agent) {
     if (!room || !agent) return;
     if (room->agent_count >= HOLO_MAX_AGENTS) return;

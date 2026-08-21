@@ -9,11 +9,25 @@ all: $(BIN) test
 $(BIN): src/main.c $(ALL_SRC) src/holodeck.h
 	$(CC) $(CFLAGS) -o $@ src/main.c $(ALL_SRC)
 
-test: tests/conformance_simple.c $(CORE_SRC) src/holodeck.h
-	$(CC) $(CFLAGS) -o test_conf tests/conformance_simple.c $(CORE_SRC)
+test_conf: tests/conformance_simple.c $(CORE_SRC) src/holodeck.h
+	$(CC) $(CFLAGS) -o $@ tests/conformance_simple.c $(CORE_SRC)
+
+test_rooms: tests/test_rooms.c src/room.c src/agent.c src/room.h src/agent.h src/holodeck.h
+	$(CC) $(CFLAGS) -o $@ tests/test_rooms.c src/room.c src/agent.c
+
+test_serial: tests/test_serial_bridge.c src/serial_bridge.c src/serial_bridge.h
+	$(CC) $(CFLAGS) -o $@ tests/test_serial_bridge.c src/serial_bridge.c
+
+test_command: tests/test_command.c $(CORE_SRC) src/holodeck.h
+	$(CC) $(CFLAGS) -o $@ tests/test_command.c $(CORE_SRC)
+
+test: test_conf test_rooms test_serial test_command
 	./test_conf
+	./test_rooms
+	./test_serial
+	./test_command
 
 clean:
-	rm -f $(BIN) test_conf *.o src/*.o
+	rm -f $(BIN) test_conf test_rooms test_serial test_command *.o src/*.o obj/*.o
 
 .PHONY: all test clean
