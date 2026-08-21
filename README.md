@@ -104,7 +104,7 @@ go <direction>    — Move north/south/east/west
 say <message>     — Speak to everyone in the room
 tell <agent> <msg> — Send a private message
 yell <message>    — Broadcast to adjacent rooms
-gossip <message>  — Broadcast to the entire world
+gossip <message>  — Gossip to the fleet (echoed locally)
 note <message>    — Write a note on the wall
 read              — Read wall notes
 who               — List all agents
@@ -125,6 +125,10 @@ quit              — Disconnect
 - T21-T22: Room boot/shutdown
 
 ## Comparison with holodeck-zig and holodeck-go
+
+Sibling implementations of the same FLUX-LCAR protocol:
+**[holodeck-go](https://github.com/SuperInstance/holodeck-go)** (Go 1.24) and
+**[holodeck-zig](https://github.com/SuperInstance/holodeck-zig)** (Zig).
 
 | Feature | holodeck-c | holodeck-go | holodeck-zig |
 |---|---|---|---|
@@ -147,7 +151,3 @@ All three implementations are **wire-compatible** — they implement the same FL
 ## Dependencies
 
 C99 only. POSIX for sockets (`sys/socket.h`, `sys/select.h`). No external libraries. `gcc -Wall -Wextra -pedantic -std=c99`.
-
----
-
-<img src="callsign1.jpg" width="128" alt="callsign">
