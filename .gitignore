@@ -9,6 +9,7 @@
 /test_full_conf
 /test_rooms
 /test_serial
+/test_command
 
 # Object files & build directories
 *.o

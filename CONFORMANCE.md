@@ -17,7 +17,7 @@ Every implementation must pass all 40 tests to be fleet-certified.
 
 ### Communication
 - [ ] T08: Agent says something (only same room hears)
-- [ ] T09: Agent tells another agent (direct, async, persists)
+- [x] T09: Agent tells another agent (direct, async, persists) ✅
 - [ ] T10: Agent yells (adjacent rooms hear)
 - [ ] T11: Agent gossips (fleet-wide broadcast)
 - [ ] T12: Agent writes note on wall (persistent in room)
